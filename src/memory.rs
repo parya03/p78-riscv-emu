@@ -13,13 +13,13 @@ use std::env;
 const MEMORY_SIZE_BYTES: usize = 65536;
 const PAGE_SIZE_BYTES: usize = 0x0FFF; // 4096 bytes per page/frame
 
-const l1_pt_mask: u64 = 0x0000000000FFF000;
-const l2_pt_mask: u64 = 0x0000000FFF000000;
+const L1_PT_MASK: u64 = 0x0000000000FFF000;
+const L2_PT_MASK: u64 = 0x0000000FFF000000;
 const fn l1_pt_addr(addr: u64) -> usize {
-    return ((addr & l1_pt_mask) >> 12) as usize;
+    return ((addr & L1_PT_MASK) >> 12) as usize;
 }
 const fn l2_pt_addr(addr: u64) -> usize {
-    return ((addr & l2_pt_mask) >> 24) as usize;
+    return ((addr & L2_PT_MASK) >> 24) as usize;
 }
 
 // Memory organized using multi-level paging, similar to a real system
