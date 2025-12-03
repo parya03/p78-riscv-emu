@@ -4,13 +4,15 @@
 
 use std::fs;
 
-pub unsafe fn load_elf(path: &String, mem: &mut [u64]) -> i32 {
+use crate::memory::Memory;
+
+pub unsafe fn load_elf(path: &String, mem: &mut Memory) -> Result<(), &'static str> {
     let elf_contents;
     match fs::read(path) {
         Ok(v) => elf_contents = v,
         Err(e) => {
             println!("Error reading ELF file");
-            return -1;
+            return Err("Error reading ELF file");
         }
     }
     // dbg!(elf_header);
@@ -22,7 +24,7 @@ pub unsafe fn load_elf(path: &String, mem: &mut [u64]) -> i32 {
     // let magic_num: [u8; 4] = elf_header[0..4];
     if(elf_header[0..4] != [0x7F, 'E' as u8, 'L' as u8, 'F' as u8][..]) {
         println!("Wrong elf magic number");
-        return -1;
+        return Err("Wrong elf magic number");
     }
     
     let is_big_endianness: bool = elf_header[5] == 2;
@@ -32,7 +34,7 @@ pub unsafe fn load_elf(path: &String, mem: &mut [u64]) -> i32 {
     // Check if ISA is correct
     if(elf_header[18] != 0xF3) {
         println!("This ELF is not for RISC-V!");
-        return -1;
+        return Err("This ELF is not for RISC-V!");
     }
 
     let mut entry_point: u64;
@@ -155,5 +157,5 @@ pub unsafe fn load_elf(path: &String, mem: &mut [u64]) -> i32 {
     println!("Program Header Offset: {:#X}, Number of Entries: {}", e_phoff, e_phnum);
     println!("Section Header Offset: {:#X}, Number of Entries: {}", e_shoff, e_shnum);
 
-    return 0;
+    return Ok(());
 }
